@@ -13,11 +13,10 @@ export class ListPageComponent implements OnInit {
 
   constructor(private heroesService: HeroesService) { }
 
-
   ngOnInit(): void {
     this.heroesService.getHeroes()
-      .subscribe(heroes => this.heroes = heroes)
+      .subscribe( heroes => this.heroes = heroes)
   }
 
-
+  
 }

@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Hero } from '../interfaces/hero.interface';
-import { Observable, catchError, of } from 'rxjs';
+import { Observable, catchError, map, of } from 'rxjs';
 import { environments } from '../../../environments/environments.prod';
 import { query } from '@angular/animations';
 
@@ -19,15 +19,35 @@ export class HeroesService {
     return this.http.get<Hero[]>(`${this.baseUrl}/heroes`)
   }
 
-  getHeroById( id: string ): Observable<Hero|undefined> {
-    return this.http.get<Hero>(`${this.baseUrl}/heroes/${ id }`)
+  getHeroById(id: string): Observable<Hero | undefined> {
+    return this.http.get<Hero>(`${this.baseUrl}/heroes/${id}`)
+      .pipe(
+        catchError(error => of(undefined))
+      )
+  }
+
+  getSuggestions(): Observable<Hero[]> {
+    return this.http.get<Hero[]>(`${this.baseUrl}/heroes?q=${query}&_limit=6`)
+  }
+
+  addHero(hero: Hero): Observable<Hero> {
+    return this.http.post<Hero>(`${this.baseUrl}/heroes`, hero)
+  }
+
+  updateHero(hero: Hero): Observable<Hero> {
+    if( !hero.id ) throw Error ('Hero id is required')
+
+    return this.http.patch<Hero>(`${this.baseUrl}/heroes${ hero.id }`, hero);
+  }
+
+  deleteHeroById( id: string ): Observable<boolean> {
+
+    return this.http.delete(`${this.baseUrl}/heroes/${ id }`)
     .pipe(
-      catchError( error => of(undefined))
+      catchError( err => of(false)),
+      map( resp => true )
     )
   }
 
-getSuggestions(): Observable<Hero[]> {
-  return this.http.get<Hero[]>(`${ this.baseUrl }/heroes?q=${ query }&_limit=6`)
-}
 
 }

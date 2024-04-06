@@ -9,13 +9,10 @@
       </button>
     </mat-toolbar>
 
-    <mat-nav-list >
-      <mat-list-item 
-      *ngFor="let item of sidebarItems"
-      [routerLink]="item.url"
-      (click)="sidenav.toggle()">
-      <mat-icon matListItemIcon> {{item.icon}} </mat-icon>
-      {{ item.label }}
+    <mat-nav-list>
+      <mat-list-item *ngFor="let item of sidebarItems" [routerLink]="item.url" (click)="sidenav.toggle()">
+        <mat-icon matListItemIcon> {{item.icon}} </mat-icon>
+        {{ item.label }}
       </mat-list-item>
     </mat-nav-list>
 
@@ -27,8 +24,8 @@
     </button>
 
     <span class="spacer"></span>
-
-    <button mat-button>Logout</button>
+    <span> {{ user?.email }} </span>
+    <button mat-button (click)="onLogout()">Logout</button>
   </mat-toolbar>
 
   <div class="container p-2">

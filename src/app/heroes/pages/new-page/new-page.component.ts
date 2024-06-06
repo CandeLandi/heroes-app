@@ -30,6 +30,8 @@ export class NewPageComponent implements OnInit {
     { id: 'Marvel Comics', desc: 'Marvel - Comics' }
   ]
 
+
+
   constructor(
     private heroesService: HeroesService,
     private activatedRoute: ActivatedRoute,

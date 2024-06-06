@@ -15,12 +15,10 @@ export class LoginPageComponent {
   ) { }
 
   onLogin(): void {
-    this.authService.login('fernando@gmail.com', '123456')
+    this.authService.login('candela@google.com', '123456')
       .subscribe(user => {
         this.router.navigate(['/'])
       })
-
-
 
   }
 }

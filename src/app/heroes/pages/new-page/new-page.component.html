@@ -32,7 +32,7 @@
           <mat-form-field class="col-12 ">
             <mat-label> Creador </mat-label>
             <mat-select required="" formControlName="publisher">
-              <mat-option *ngFor="let publisher of publishers" [value]="publisher.id"></mat-option>
+              <mat-option *ngFor="let publisher of publishers" [value]="publisher.id">{{ publisher.id }}</mat-option>
             </mat-select>
           </mat-form-field>
 

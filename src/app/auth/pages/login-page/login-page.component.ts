@@ -34,5 +34,6 @@ export class LoginPageComponent {
           Swal.fire('Error', message, 'error' )
         }
       })
+
   }
 }

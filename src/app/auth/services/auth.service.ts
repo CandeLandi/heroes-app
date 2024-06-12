@@ -2,7 +2,8 @@ import { Injectable, computed, signal } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { User } from '../interfaces/user.interface';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, catchError, map, of, tap, throwError } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
 import { AuthStatus } from '../interfaces/auth-status.enum';
 import { RegisterPayload } from '../interfaces/register-payload';
 import { CheckTokenResponse } from '../interfaces/check-token.response';
@@ -17,13 +18,13 @@ export class AuthService {
   private user?: User;
 
   constructor(private http: HttpClient) {
-    console.log('AuthService initialized');
     this.checkAuthStatus().subscribe();
   }
 
   private _authStatus = signal<AuthStatus>(AuthStatus.checking);
   private _currentUser = signal<User | null>(null);
 
+  // Al exterior (cualquier cosa que esté fuera del servicio)
   public currentUser = computed(() => this._currentUser());
   public authStatus = computed(() => this._authStatus());
 
@@ -33,7 +34,6 @@ export class AuthService {
   }
 
   private setAuthentication(user: User, token: string): boolean {
-    console.log('Setting authentication:', user, token);
     this._currentUser.set(user);
     this._authStatus.set(AuthStatus.authenticated);
     localStorage.setItem('token', token);

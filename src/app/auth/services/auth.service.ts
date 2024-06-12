@@ -1,33 +1,86 @@
-
-import { Injectable } from '@angular/core';
-import { environments } from '../../../environments/environment';
+import { Injectable, computed, signal } from '@angular/core';
+import { environment } from '../../../environments/environment';
 import { User } from '../interfaces/user.interface';
-import { HttpClient } from '@angular/common/http';
-import { Observable, catchError, map, of, tap } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable, catchError, map, of, tap, throwError } from 'rxjs';
+import { AuthStatus } from '../interfaces/auth-status.enum';
+import { RegisterPayload } from '../interfaces/register-payload';
+import { CheckTokenResponse } from '../interfaces/check-token.response';
+import { Token } from '@angular/compiler';
+import { LoginResponse } from '../interfaces/login-response.interface';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  private baseUrl = environments.baseUrl
+  private baseUrl = environment.baseUrl;
   private user?: User;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {
+    this.checkAuthStatus().subscribe();
+  }
 
-  get currentUser(): User | undefined {
+  private _authStatus = signal<AuthStatus>(AuthStatus.checking);
+  private _currentUser = signal<User | null>(null);
+
+  // Al exterior (cualquier cosa que esté fuera del servicio)
+  public currentUser = computed(() => this._currentUser());
+  public authStatus = computed(() => this._authStatus());
+
+  get __currentUser(): User | undefined {
     if (!this.user) return undefined;
     return structuredClone(this.user);
   }
 
-  login(email: string, password: string): Observable<User> {
+  private setAuthentication(user: User, token: string): boolean {
+    this._currentUser.set(user);
+    this._authStatus.set(AuthStatus.authenticated);
+    localStorage.setItem('token', token);
+    return true;
+  }
 
-    //http.post('login), { email, password}
-    return this.http.get<User>(`${this.baseUrl}/users/1`)
+
+  login(email: string, password: string): Observable<boolean> {
+
+    const url = `${this.baseUrl}/auth/login`;
+    const body = { email, password };
+
+    return this.http.post<LoginResponse>(url, body)
       .pipe(
-        tap(user => this.user = user),
-        tap(user => localStorage.setItem('token', 'ajshdasd.asdjajksd.'))
-      )
+        map(({ user, token }) => this.setAuthentication(user, token)),
+        catchError(err => throwError(() => err.error.message))
+      );
+  }
+
+  register(user: User): Observable<boolean> {
+    const url = `${this.baseUrl}/auth/register`;
+
+    return this.http.post<RegisterPayload>(url, user)
+      .pipe(
+        map(({ user, token }) => this.setAuthentication(user, token)),
+        catchError(error => {
+          console.error('Error registering user:', error);
+          return of(false);
+        })
+      );
+  }
+
+  checkAuthStatus(): Observable<boolean> {
+    const url = `${this.baseUrl}/auth/check-token`;
+    const token = localStorage.getItem('token');
+
+
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+    return this.http.get<CheckTokenResponse>(url, { headers })
+      .pipe(
+        map(({ user, token }) => this.setAuthentication(user, token)),
+        catchError(() => {
+          this._authStatus.set(AuthStatus.notAuthenticated);
+          return of(false);
+        })
+      );
   }
 
   checkAuthentication(): Observable<boolean> {
@@ -35,7 +88,7 @@ export class AuthService {
     if (!localStorage.getItem('token')) return of(false);
     const token = localStorage.getItem('token');
 
-    return this.http.get<User>(`${this.baseUrl}/users/1`)
+    return this.http.get<User>(`${this.baseUrl}/heroes`)
       .pipe(
         tap(user => this.user = user),
         map(user => !!user),
@@ -44,8 +97,11 @@ export class AuthService {
 
   }
 
+
   logout() {
-    this.user = undefined;
-    localStorage.clear();
+    localStorage.removeItem('token');
+    this._currentUser.set(null);
+    this._authStatus.set(AuthStatus.notAuthenticated);
+
   }
 }

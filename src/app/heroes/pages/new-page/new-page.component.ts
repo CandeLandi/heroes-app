@@ -65,7 +65,7 @@ export class NewPageComponent implements OnInit {
   onSubmit(): void {
     if (this.heroForm.invalid) return;
 
-    if (this.currentHero.id) {
+    if (this.currentHero._id) {
       this.heroesService.updateHero(this.currentHero)
         .subscribe(hero => {
           this.showSnackBar(`${hero.superhero} updated!`)
@@ -76,20 +76,20 @@ export class NewPageComponent implements OnInit {
     this.heroesService.addHero(this.currentHero)
       .subscribe(hero => {
         // TODO: mostrar snackbar y navegar a /heroes/edit/hero.id
-        this.router.navigate(['/heroes/edit', hero.id])
+        this.router.navigate(['/heroes/edit', hero._id])
         this.showSnackBar(`${hero.superhero} created!`)
       })
   }
 
   onDeleteHero(): void {
-    if (!this.currentHero.id) throw Error('Hero id is required')
+    if (!this.currentHero._id) throw Error('Hero id is required')
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: this.heroForm.value,
     });
     dialogRef.afterClosed()
       .pipe(
         filter((result: boolean) => result),
-        switchMap(() => this.heroesService.deleteHeroById(this.currentHero.id)),
+        switchMap(() => this.heroesService.deleteHeroById(this.currentHero._id)),
         filter((wasDeleted: boolean) => wasDeleted)
       ).subscribe(result => {
         /*       if (!result) return;

@@ -23,23 +23,23 @@
     </mat-card-content>
     <mat-divider></mat-divider>
     <mat-card-actions>
-        <button 
-        mat-button 
-        mat-raised 
+        <button
+        mat-button
+        mat-raised
         color="primary"
-        [routerLink]="['/heroes/edit', hero.id]">
+        [routerLink]="['/heroes/edit', hero._id]">
             <mat-icon>edit</mat-icon>
             Editar
         </button>
         <span class="spacer"></span>
-        <button 
-        mat-button 
-        mat-raised 
+        <button
+        mat-button
+        mat-raised
         color="primary"
-        [routerLink]="['/heroes/edit', hero.id]">
-            <mat-icon>more_horiz</mat-icon>
-        
+        [routerLink]="['/heroes/edit', hero._id]">
+
         </button>
 
+        <mat-icon>delete</mat-icon>
     </mat-card-actions>
 </mat-card>

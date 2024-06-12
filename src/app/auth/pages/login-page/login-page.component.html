@@ -1,16 +1,18 @@
 
-<div class="flex flex-column">
+<form [formGroup]="myForm" (ngSubmit)="onLogin()" class="flex flex-column">
 
   <span class="text-lg mb-4">Login</span>
 
   <mat-form-field>
-    <mat-label>Usuario</mat-label>
-    <input type="text" matInput placeholder="Nombre de usuario">
+    <mat-label>Email</mat-label>
+    <input type="text" matInput placeholder="Email"
+    formControlName="email">
   </mat-form-field>
 
   <mat-form-field>
     <mat-label>Contraseña</mat-label>
-    <input type="password" matInput placeholder="Contraseña">
+    <input type="password" matInput placeholder="Contraseña"
+    formControlName="password">
   </mat-form-field>
 
   <button mat-button mat-flat-button color="primary"
@@ -24,4 +26,4 @@
     <a routerLink="/auth/new-account">¿No tienes cuenta?</a>
   </div>
 
-</div>
+</form>

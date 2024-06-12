@@ -1,53 +1,79 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Hero } from '../interfaces/hero.interface';
-import { Observable, catchError, map, of } from 'rxjs';
-import { environments } from '../../../environments/environments.prod';
-import { query } from '@angular/animations';
+import { Observable, catchError, map, of, throwError } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class HeroesService {
 
-  private baseUrl: string = environments.baseUrl;
+  private baseUrl: string = environment.baseUrl;
 
   constructor(private http: HttpClient) { }
 
-
   getHeroes(): Observable<Hero[]> {
     return this.http.get<Hero[]>(`${this.baseUrl}/heroes`)
+      .pipe(
+        catchError(error => {
+          console.error('Error fetching heroes:', error);
+          return of([]);
+        })
+      );
   }
 
   getHeroById(id: string): Observable<Hero | undefined> {
     return this.http.get<Hero>(`${this.baseUrl}/heroes/${id}`)
+
       .pipe(
-        catchError(error => of(undefined))
-      )
+        catchError(error => {
+          console.error('Error fetching hero by id:', error);
+          return of(undefined);
+        })
+      );
   }
 
   getSuggestions(): Observable<Hero[]> {
-    return this.http.get<Hero[]>(`${this.baseUrl}/heroes?q=${query}&_limit=6`)
+    return this.http.get<Hero[]>(`${this.baseUrl}/heroes`)
+      .pipe(
+        catchError(error => {
+          console.error('Error fetching suggestions:', error);
+          return of([]);
+        })
+      );
   }
 
   addHero(hero: Hero): Observable<Hero> {
     return this.http.post<Hero>(`${this.baseUrl}/heroes`, hero)
+      .pipe(
+        catchError(error => {
+          console.error('Error adding hero:', error);
+          return of({} as Hero);
+        })
+      );
   }
 
   updateHero(hero: Hero): Observable<Hero> {
-    if( !hero.id ) throw Error ('Hero id is required')
+    if (!hero._id) return throwError(() => new Error('Hero id is required'));
 
-    return this.http.patch<Hero>(`${this.baseUrl}/heroes${ hero.id }`, hero);
+    return this.http.put<Hero>(`${this.baseUrl}/heroes/${hero._id}`, hero)
+      .pipe(
+        catchError(error => {
+          console.error('Error updating hero:', error);
+          return of({} as Hero);
+        })
+      );
   }
 
-  deleteHeroById( id: string ): Observable<boolean> {
-
-    return this.http.delete(`${this.baseUrl}/heroes/${ id }`)
-    .pipe(
-      map( resp => true ),
-      catchError( err => of(false)),
-    )
+  deleteHeroById(id: string): Observable<boolean> {
+    return this.http.delete(`${this.baseUrl}/heroes/${id}`)
+      .pipe(
+        map(resp => true),
+        catchError(error => {
+          console.error('Error deleting hero:', error);
+          return of(false);
+        })
+      );
   }
-
-
 }

@@ -23,8 +23,9 @@ export class LayoutPageComponent {
   ) { }
 
   get user(): User | undefined {
-    return this.authService.currentUser
+    return this.authService.__currentUser
   }
+
   onLogout() {
     this.authService.logout();
     this.router.navigate(['/auth/login'])

@@ -20,7 +20,6 @@ import { ConfirmDialogComponent } from '../../components/confirm-dialog/confirm-
 })
 export class NewPageComponent implements OnInit {
   public heroForm: FormGroup = this.fb.group({
-    _id: [''],
     superhero: ['', Validators.required],
     publisher: ['', Validators.required],
     alter_ego: ['', Validators.required],
@@ -90,7 +89,7 @@ export class NewPageComponent implements OnInit {
       .pipe(
         filter((result: boolean) => result),
         switchMap(() =>
-          this.heroesService.deleteHeroById(this.currentHero._id)
+          this.heroesService.deleteHeroById(this.currentHero._id!)
         ),
         filter((wasDeleted: boolean) => wasDeleted)
       )

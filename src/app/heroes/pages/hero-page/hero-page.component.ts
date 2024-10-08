@@ -24,8 +24,8 @@ export class HeroPageComponent implements OnInit {
         delay(3000),
         switchMap(({ id }) => this.heroesService.getHeroById(id))
       ).subscribe(hero => {
-        if (!hero) return this.router.navigate(['/heroes.list'])
-        
+        if (!hero) return this.router.navigate(['/heroes'])
+
         this.hero = hero;
         return;
       })

@@ -2,5 +2,5 @@
     baseUrl: 'https://angular-heroes-crud-app.netlify.app'
 } */
 export const environment = {
-  baseUrl: 'https://angular-nest-auth-backend-production-cf82.up.railway.app'
+  baseUrl: 'https://nest-auth-backend-77f19b7fed66.herokuapp.com'
 }

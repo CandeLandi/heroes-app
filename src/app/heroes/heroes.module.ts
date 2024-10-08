@@ -31,6 +31,9 @@ import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dial
     HeroesRoutingModule,
     MaterialModule,
     ReactiveFormsModule
+  ],
+  exports: [
+    NewPageComponent
   ]
 })
 export class HeroesModule { }

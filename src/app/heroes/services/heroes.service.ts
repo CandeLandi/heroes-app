@@ -48,23 +48,23 @@ export class HeroesService {
     return this.http.post<Hero>(`${this.baseUrl}/heroes`, hero)
       .pipe(
         catchError(error => {
-          console.error('Error adding hero:', error);
-          return of({} as Hero);
+          console.error('Error creando el héroe:', error);
+          return throwError(error);
         })
       );
   }
 
   updateHero(hero: Hero): Observable<Hero> {
     if (!hero._id) return throwError(() => new Error('Hero id is required'));
-
     return this.http.put<Hero>(`${this.baseUrl}/heroes/${hero._id}`, hero)
       .pipe(
         catchError(error => {
-          console.error('Error updating hero:', error);
-          return of({} as Hero);
+          console.error('Error actualizando el héroe:', error);
+          return throwError(error);
         })
       );
   }
+
 
   deleteHeroById(id: string): Observable<boolean> {
     return this.http.delete(`${this.baseUrl}/heroes/${id}`)
